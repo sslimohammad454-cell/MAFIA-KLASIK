@@ -1,0 +1,2302 @@
+Canvas
+├── BG_City
+├── TopBar
+│    ├── CoinsDisplay
+│    └── GemsDisplay
+├── ProfileCard
+│    ├── Avatar
+│    ├── Crown
+│    ├── Name
+│    ├── Trophy
+│    └── Star
+├── RightMenu
+│    ├── Btn_Announcements
+│    ├── Btn_Tutorial
+│    ├── Btn_Ranking
+│    ├── Btn_League
+│    └── Btn_Live
+├── ModeButtons
+│    ├── Btn_Friendly
+│    └── Btn_Ranked
+├── ModeIconsRow
+└── BottomNav
+├── Btn_Store
+├── Btn_Home
+└── Btn_Socialusing UnityEngine;
+using UnityEngine.UI;
+
+public class LobbyUIController : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Text playerNameText;
+    public Text trophyText;
+    public Text starText;
+    public Image avatarImage;
+    public Image crownImage;
+
+    public void SetPlayerInfo(PlayerData data) {
+        coinsText.text = data.coins.ToString();
+        gemsText.text = data.gems.ToString();
+        playerNameText.text = data.username;
+        trophyText.text = data.trophies.ToString();
+        starText.text = data.stars.ToString();
+        avatarImage.sprite = data.avatar;
+        crownImage.enabled = data.hasCrown;
+    }
+
+    public void OnFriendlyClicked() {
+        Debug.Log("دوستانه انتخاب شد");
+        // Load friendly mode scene
+    }
+
+    public void OnRankedClicked() {
+        Debug.Log("امتیازی انتخاب شد");
+        // Load ranked mode scene
+    }
+}
+Canvas
+├── TopTabs
+│    ├── Btn_AllGroups
+│    ├── Btn_GroupDetails
+│    └── Btn_MyGroup
+├── GroupHeader
+├── GroupInfoPanel
+├── MemberList
+│    ├── MemberCard (Prefab)
+├── ActionButtons
+│    ├── Btn_EditGroup
+│    ├── Btn_LeaveGroup
+│    ├── Btn_AddMember
+└── BottomNav
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum GroupRole {
+    Leader,
+    Deputy,
+    Member
+}
+
+[System.Serializable]
+public class GroupMember
+{
+    public string username;
+    public int trophies;
+    public Sprite avatar;
+    public GroupRole role;
+}
+
+public class GroupManager : MonoBehaviour
+{
+    public Transform memberListParent;
+    public GameObject memberCardPrefab;
+
+    public void DisplayMembers(List < GroupMember > members) {
+        foreach (Transform child in memberListParent)
+        Destroy(child.gameObject);
+
+        foreach (var member in members) {
+            GameObject card = Instantiate(memberCardPrefab, memberListParent);
+            card.transform.Find("Username").GetComponent < Text > ().text = member.username;
+            card.transform.Find("Trophy").GetComponent < Text > ().text = member.trophies.ToString();
+            card.transform.Find("Avatar").GetComponent < Image > ().sprite = member.avatar;
+            card.transform.Find("Role").GetComponent < Text > ().text = member.role.ToString();
+        }
+    }
+}
+Canvas
+├── TopBar
+│    ├── Title
+│    ├── FilterButtons
+│    └── SearchBar
+├── LobbyList
+│    ├── LobbyCard (Prefab)
+├── BottomButtons
+│    ├── Btn_CustomScenario
+│    ├── Btn_CreateLobby
+│    └── Btn_Refresh
+└── BottomNav
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum LobbyMode {
+    All,
+    Private,
+    Detective,
+    Commando
+}
+
+[System.Serializable]
+public class LobbyInfo
+{
+    public string name;
+    public string creator;
+    public int players;
+    public int spectators;
+    public LobbyMode mode;
+}
+
+public class LobbyListManager : MonoBehaviour
+{
+    public Transform lobbyListParent;
+    public GameObject lobbyCardPrefab;
+
+    public void DisplayLobbies(List < LobbyInfo > lobbies) {
+        foreach (Transform child in lobbyListParent)
+        Destroy(child.gameObject);
+
+        foreach (var lobby in lobbies) {
+            GameObject card = Instantiate(lobbyCardPrefab, lobbyListParent);
+            card.transform.Find("LobbyName").GetComponent < Text > ().text = lobby.name;
+            card.transform.Find("Creator").GetComponent < Text > ().text = lobby.creator;
+            card.transform.Find("PlayerCount").GetComponent < Text > ().text = $"{lobby.players} بازیکن / {lobby.spectators} تماشاگر";
+            card.transform.Find("Mode").GetComponent < Text > ().text = lobby.mode.ToString();
+        }
+    }
+}
+Canvas
+├── TopBar
+├── TabButtons
+├── SelectedItemDisplay
+├── ItemTabs
+├── ItemGrid
+│    ├── ItemCard (Prefab)
+└── BottomNav
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum CosmeticType {
+    Avatar,
+    Frame,
+    Crown
+}
+
+[System.Serializable]
+public class CosmeticItem
+{
+    public string name;
+    public Sprite image;
+    public int price;
+    public bool owned;
+    public bool equipped;
+    public CosmeticType type;
+}
+
+public class CosmeticShopManager : MonoBehaviour
+{
+    public Transform itemGridParent;
+    public GameObject itemCardPrefab;
+
+    public void DisplayItems(List < CosmeticItem > items) {
+        foreach (Transform child in itemGridParent)
+        Destroy(child.gameObject);
+
+        foreach (var item in items) {
+            GameObject card = Instantiate(itemCardPrefab, itemGridParent);
+            card.transform.Find("ItemImage").GetComponent < Image > ().sprite = item.image;
+            card.transform.Find("Price").GetComponent < Text > ().text = item.price.ToString();
+            card.transform.Find("Status").GetComponent < Text > ().text = item.owned ? (item.equipped ? "استفاده شده" : "دارید") : "قابل خرید";
+        }
+    }
+}
+Canvas
+├── TopBar
+│    ├── CoinsDisplay
+│    └── GemsDisplay
+├── Section_CoinPackages
+│    ├── CoinCard (Prefab)
+├── Section_GemPackages
+│    ├── GemCard (Prefab)
+├── Section_GiftGems
+│    ├── GiftGemCard (Prefab)
+└── BottomNav
+├── Btn_Store
+├── Btn_Home
+└── Btn_Social
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class ShopItem
+{
+    public string name;
+    public Sprite icon;
+    public int amount;
+    public int price;
+    public string currency; // "gems" or "toman"
+    public bool isGift;
+}
+
+public class ShopManager : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Transform coinSection;
+    public Transform gemSection;
+    public Transform giftSection;
+    public GameObject itemCardPrefab;
+
+    public void SetPlayerBalance(int coins, int gems) {
+        coinsText.text = coins.ToString();
+        gemsText.text = gems.ToString();
+    }
+
+    public void DisplayItems(List < ShopItem > items) {
+        foreach (Transform child in coinSection) Destroy(child.gameObject);
+        foreach (Transform child in gemSection) Destroy(child.gameObject);
+        foreach (Transform child in giftSection) Destroy(child.gameObject);
+
+        foreach (var item in items) {
+            Transform parent = item.isGift ? giftSection : (item.currency == "gems" ? coinSection : gemSection);
+            GameObject card = Instantiate(itemCardPrefab, parent);
+            card.transform.Find("ItemName").GetComponent < Text > ().text = item.name;
+            card.transform.Find("ItemAmount").GetComponent < Text > ().text = item.amount.ToString();
+            card.transform.Find("ItemPrice").GetComponent < Text > ().text = item.price + (item.currency == "gems" ? " 💎" : " تومان");
+            card.transform.Find("ItemIcon").GetComponent < Image > ().sprite = item.icon;
+        }
+    }
+
+    public void OnBuyItem(ShopItem item) {
+        Debug.Log($"خرید آیتم: {item.name} با قیمت {item.price} {item.currency}");
+        // اتصال به سیستم پرداخت یا کاهش جم
+    }
+}
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class GemPackage
+{
+    public int gems;
+    public int priceToman;
+}
+
+[System.Serializable]
+public class EmojiPack
+{
+    public int emojis;
+    public int priceGems;
+}
+
+[System.Serializable]
+public class DailyReward
+{
+    public int day;
+    public int coins;
+    public bool claimed;
+}
+
+public class SpecialShopManager : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Transform gemSection;
+    public Transform emojiSection;
+    public Transform dailyRewardSection;
+    public GameObject gemCardPrefab;
+    public GameObject emojiCardPrefab;
+    public GameObject rewardCardPrefab;
+
+    public void SetBalance(int coins, int gems) {
+        coinsText.text = coins.ToString();
+        gemsText.text = gems.ToString();
+    }
+
+    public void DisplayGemPackages(List < GemPackage > packages) {
+        foreach (Transform child in gemSection) Destroy(child.gameObject);
+        foreach (var pack in packages) {
+            GameObject card = Instantiate(gemCardPrefab, gemSection);
+            card.transform.Find("GemAmount").GetComponent < Text > ().text = pack.gems.ToString();
+            card.transform.Find("Price").GetComponent < Text > ().text = pack.priceToman + " تومان";
+        }
+    }
+
+    public void DisplayEmojiPacks(List < EmojiPack > packs) {
+        foreach (Transform child in emojiSection) Destroy(child.gameObject);
+        foreach (var pack in packs) {
+            GameObject card = Instantiate(emojiCardPrefab, emojiSection);
+            card.transform.Find("EmojiCount").GetComponent < Text > ().text = pack.emojis.ToString();
+            card.transform.Find("Price").GetComponent < Text > ().text = pack.priceGems + " 💎";
+        }
+    }
+
+    public void DisplayDailyRewards(List < DailyReward > rewards) {
+        foreach (Transform child in dailyRewardSection) Destroy(child.gameObject);
+        foreach (var reward in rewards) {
+            GameObject card = Instantiate(rewardCardPrefab, dailyRewardSection);
+            card.transform.Find("DayLabel").GetComponent < Text > ().text = "روز " + reward.day;
+            card.transform.Find("CoinAmount").GetComponent < Text > ().text = reward.coins.ToString();
+            card.transform.Find("Status").GetComponent < Text > ().text = reward.claimed ? "✅" : "⏳";
+        }
+    }
+}
+Canvas
+├── Title ("ساخت سناریو")
+├── RoleCategories
+│    ├── MafiaRoles
+│    ├── CitizenRoles
+│    └── IndependentRoles
+├── RoleCard (Prefab)
+│    ├── RoleImage
+│    ├── RoleName
+│    ├── Btn_Add
+│    ├── Btn_Remove
+│    └── CountDisplay
+├── SummaryPanel
+│    ├── MafiaCount
+│    ├── CitizenCount
+│    └── IndependentCount
+├── Btn_EditScenario
+├── Btn_Tournament
+└── BottomNav
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum RoleType {
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class Role
+{
+    public string name;
+    public Sprite icon;
+    public RoleType type;
+    public int count;
+}
+
+public class ScenarioBuilder : MonoBehaviour
+{
+    public List < Role > allRoles;
+    public Transform mafiaPanel;
+    public Transform citizenPanel;
+    public Transform independentPanel;
+    public GameObject roleCardPrefab;
+
+    public Text mafiaCountText;
+    public Text citizenCountText;
+    public Text independentCountText;
+
+    void Start() {
+        DisplayRoles();
+        UpdateSummary();
+    }
+
+    void DisplayRoles() {
+        foreach (var role in allRoles) {
+            Transform parent = role.type switch
+            {
+                RoleType.Mafia => mafiaPanel,
+                RoleType.Citizen => citizenPanel,
+                RoleType.Independent => independentPanel,
+                _ => null
+            };
+
+            GameObject card = Instantiate(roleCardPrefab, parent);
+            card.transform.Find("RoleName").GetComponent < Text > ().text = role.name;
+            card.transform.Find("RoleImage").GetComponent < Image > ().sprite = role.icon;
+            card.transform.Find("CountDisplay").GetComponent < Text > ().text = role.count.ToString();
+
+            Button addBtn = card.transform.Find("Btn_Add").GetComponent < Button > ();
+            Button removeBtn = card.transform.Find("Btn_Remove").GetComponent < Button > ();
+
+            addBtn.onClick.AddListener(() => {
+                role.count++; UpdateCard(card, role); UpdateSummary();
+            });
+            removeBtn.onClick.AddListener(() => {
+                if (role.count > 0) role.count--; UpdateCard(card, role); UpdateSummary();
+            });
+        }
+    }
+
+    void UpdateCard(GameObject card,
+        Role role) {
+        card.transform.Find("CountDisplay").GetComponent < Text > ().text = role.count.ToString();
+    }
+
+    void UpdateSummary() {
+        int mafia = 0, citizen = 0, independent = 0;
+        foreach (var role in allRoles) {
+            switch (role.type) {
+                case RoleType.Mafia: mafia += role.count; break;
+                case RoleType.Citizen: citizen += role.count; break;
+                case RoleType.Independent: independent += role.count; break;
+            }
+        }
+
+        mafiaCountText.text = "مافیا: " + mafia;
+        citizenCountText.text = "شهروند: " + citizen;
+        independentCountText.text = "مستقل: " + independent;
+    }
+}
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id; // شناسه نقش (مثلاً "doctor")
+    public string displayName; // نام فارسی نقش (مثلاً "دکتر")
+    public RoleTeam team; // تیم نقش (مافیا / شهروند / مستقل)
+    public string description; // توضیح نقش
+    public Sprite icon; // تصویر نقش
+}
+new RoleDefinition {
+    id = "doctor",
+    displayName = "دکتر",
+    team = RoleTeam.Citizen,
+    description = "هر شب می‌تواند یک بازیکن را درمان کند و از مرگ نجات دهد.",
+    icon = doctorSprite
+}
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id; // شناسه انگلیسی نقش (مثلاً "doctor")
+    public string displayName; // نام فارسی نقش (مثلاً "دکتر")
+    public RoleTeam team; // تیم نقش
+    public string description; // توضیح کوتاه نقش
+    public Sprite icon; // تصویر نقش
+}
+public List < RoleDefinition > allRoles = new List < RoleDefinition >
+{
+    new RoleDefinition {
+        id = "godfather", displayName = "پدرخوانده", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "doctor", displayName = "دکتر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "killer", displayName = "قاتل", team = RoleTeam.Independent
+    },
+    new RoleDefinition {
+        id = "mayor", displayName = "شهردار", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "spy", displayName = "جاسوس", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "reviver", displayName = "احیاگر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "mason_leader", displayName = "رئیس ماسون", team = RoleTeam.Independent
+    },
+    new RoleDefinition {
+        id = "nun", displayName = "راهبه", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "blacksmith", displayName = "آهنگر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "cowboy", displayName = "کابوی", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "gangster", displayName = "گنگ‌استر", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "napoli", displayName = "ناپلی", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "psychologist", displayName = "روان‌شناس", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "tracker", displayName = "ردگیر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "observer", displayName = "نظاره‌گر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "immortal", displayName = "نامیرا", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "armored", displayName = "زره‌پوش", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "spider", displayName = "عنکبوت", team = RoleTeam.Independent
+    },
+    new RoleDefinition {
+        id = "simple_mafia", displayName = "مافیا ساده", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "citizen", displayName = "شهروند", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "strong_man", displayName = "مرد قوی", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "deceiver", displayName = "دغل", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "saboteur", displayName = "خرابکار", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "nun", displayName = "راهبه", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "mason", displayName = "ماسون", team = RoleTeam.Independent
+    },
+    new RoleDefinition {
+        id = "priest", displayName = "کشیش", team = RoleTeam.Independent
+    },
+    new RoleDefinition {
+        id = "gravedigger", displayName = "گورکن", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "negotiator", displayName = "مذاکره‌کننده", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "nato", displayName = "ناتو", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "simple_detective", displayName = "کارآگاه ساده", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "detective", displayName = "کارآگاه", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "gunslinger", displayName = "تفنگدار", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "jailer", displayName = "زندانبان", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "guard", displayName = "نگهبان", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "nostradamus", displayName = "نوستراداموس", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "innocent", displayName = "بی‌گناه", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "stranger", displayName = "بیگانه", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "invulnerable", displayName = "رویین‌تن", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "mafia_doctor", displayName = "دکتر مافیا", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "silencer", displayName = "سایلنسر", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "blackma", displayName = "بلک‌ما", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "exposer", displayName = "رسواگر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "mayor", displayName = "شهردار", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "reviver", displayName = "احیاگر", team = RoleTeam.Citizen
+    },
+    new RoleDefinition {
+        id = "khan", displayName = "خان", team = RoleTeam.Mafia
+    },
+    new RoleDefinition {
+        id = "terrorist", displayName = "تروریست", team = RoleTeam.Mafia
+    },
+};
+using UnityEngine;
+
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id; // شناسه انگلیسی
+    public string displayName; // نام فارسی
+    public RoleTeam team; // تیم نقش
+    [TextArea] public string description; // توضیح نقش
+    public Sprite icon; // تصویر نقش
+}
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "RoleDatabase", menuName = "Game/RoleDatabase")]
+public class RoleDatabase : ScriptableObject
+{
+    public RoleData[] roles;
+}public class ScenarioBuilder : MonoBehaviour
+{
+    public RoleDatabase roleDatabase;
+    public Transform roleGridParent;
+    public GameObject roleCardPrefab;
+
+    void Start() {
+        foreach (var role in roleDatabase.roles) {
+            GameObject card = Instantiate(roleCardPrefab,
+                roleGridParent);
+            card.transform.Find("RoleName").GetComponent < Text > ().text = role.displayName;
+            card.transform.Find("RoleIcon").GetComponent < Image > ().sprite = role.icon;
+            // دکمه‌های + و – و شمارش را هم اضافه کن
+        }
+    }
+}
+using UnityEngine;
+
+[System.Serializable]
+public class ScenarioDefinition
+{
+    public string id; // شناسه انگلیسی سناریو (مثلاً "detective")
+    public string displayName; // نام فارسی سناریو (مثلاً "بازپرس")
+    public Sprite icon; // آیکون سناریو
+    public RoleData[] allowedRoles; // فقط این نقش‌ها در این سناریو فعال هستند
+}
+public class ScenarioBuilder : MonoBehaviour
+{
+    public ScenarioDefinition currentScenario;
+    public Transform roleGridParent;
+    public GameObject roleCardPrefab;
+
+    void Start() {
+        DisplayScenarioRoles();
+    }
+
+    void DisplayScenarioRoles() {
+        foreach (Transform child in roleGridParent)
+        Destroy(child.gameObject);
+
+        foreach (var role in currentScenario.allowedRoles) {
+            GameObject card = Instantiate(roleCardPrefab,
+                roleGridParent);
+            card.transform.Find("RoleName").GetComponent < Text > ().text = role.displayName;
+            card.transform.Find("RoleIcon").GetComponent < Image > ().sprite = role.icon;
+            // دکمه‌های + و – و شمارش را هم اضافه کن
+        }
+    }
+}
+public class PlayerInfo
+{
+    public string playerId;
+    public string playerName;
+    public Sprite avatar;
+    public RoleData assignedRole;
+}
+
+public class GameSetup
+{
+    public ScenarioDefinition scenario;
+    public List < RoleData > selectedRoles; // تکرار شده بر اساس تعداد
+    public List < PlayerInfo > players;
+}
+public List < PlayerInfo > AssignRolesToPlayers(GameSetup setup) {
+    List < RoleData > rolesToAssign = new List < RoleData > (setup.selectedRoles);
+    List < PlayerInfo > result = new List < PlayerInfo > ();
+
+    // Shuffle roles
+    for (int i = 0; i < rolesToAssign.Count; i++) {
+        int rand = Random.Range(i,
+            rolesToAssign.Count);
+        (rolesToAssign[i],
+            rolesToAssign[rand]) = (rolesToAssign[rand],
+            rolesToAssign[i]);
+    }
+
+    for (int i = 0; i < setup.players.Count; i++) {
+        setup.players[i].assignedRole = rolesToAssign[i];
+        result.Add(setup.players[i]);
+    }
+
+    return result;
+}
+public class GameManager : MonoBehaviour
+{
+    public GameSetup currentSetup;
+
+    public void StartGame() {
+        var assignedPlayers = AssignRolesToPlayers(currentSetup);
+
+        foreach (var player in assignedPlayers) {
+            Debug.Log($"بازیکن {player.playerName} نقش {player.assignedRole.displayName} گرفت");
+            // نمایش نقش به بازیکن
+        }
+
+        // Load NightScene یا GameScene
+        SceneManager.LoadScene("NightScene");
+    }
+}
+public class GameSetup
+{
+    public ScenarioDefinition scenario; // سناریوی انتخاب‌شده
+    public List < RoleData > selectedRoles; // نقش‌ها با تعداد نهایی
+    public List < PlayerInfo > players; // بازیکن‌ها
+}
+public class RoleAssigner
+{
+    public static List < PlayerInfo > AssignRoles(GameSetup setup) {
+        List < RoleData > roles = new List < RoleData > (setup.selectedRoles);
+
+        // Shuffle roles
+        for (int i = 0; i < roles.Count; i++) {
+            int rand = Random.Range(i,
+                roles.Count);
+            (roles[i],
+                roles[rand]) = (roles[rand],
+                roles[i]);
+        }
+
+        // Assign roles
+        for (int i = 0; i < setup.players.Count; i++) {
+            setup.players[i].assignedRole = roles[i];
+        }
+
+        return setup.players;
+    }
+}
+public class GameManager : MonoBehaviour
+{
+    public GameSetup setup;
+
+    public void StartGame() {
+        var playersWithRoles = RoleAssigner.AssignRoles(setup);
+
+        foreach (var p in playersWithRoles) {
+            Debug.Log($"{p.playerName} نقش {p.assignedRole.displayName} گرفت");
+        }
+
+        // ورود به شب اول
+        UnityEngine.SceneManagement.SceneManager.LoadScene("NightScene");
+    }
+}
+public abstract class RoleAction : ScriptableObject
+{
+    public abstract void Execute(PlayerInfo actor,
+        List < PlayerInfo > players);
+}
+[CreateAssetMenu(menuName = "Roles/DoctorAction")]
+public class DoctorAction : RoleAction
+{
+    public override void Execute(PlayerInfo actor,
+        List < PlayerInfo > players) {
+        Debug.Log("دکتر یک نفر را درمان کرد");
+    }
+}
+public class ScenarioDefinition : ScriptableObject
+{
+    public string id;
+    public string displayName;
+    public RoleData[] allowedRoles;
+    public RoleAction[] nightOrder; // ترتیب نقش‌ها در شب
+}
+public class NightManager : MonoBehaviour
+{
+    public GameSetup setup;
+
+    public void RunNight() {
+        foreach (var action in setup.scenario.nightOrder) {
+            foreach (var player in setup.players) {
+                if (player.assignedRole.nightAction == action) {
+                    action.Execute(player, setup.players);
+                }
+            }
+        }
+    }
+}Canvas
+ ├── BG_City
+ ├── TopBar
+ │    ├── CoinsDisplay
+ │    └── GemsDisplay
+ ├── ProfileCard
+ │    ├── Avatar
+ │    ├── Crown
+ │    ├── Name
+ │    ├── Trophy
+ │    └── Star
+ ├── RightMenu
+ │    ├── Btn_Announcements
+ │    ├── Btn_Tutorial
+ │    ├── Btn_Ranking
+ │    ├── Btn_League
+ │    └── Btn_Live
+ ├── ModeButtons
+ │    ├── Btn_Friendly
+ │    └── Btn_Ranked
+ ├── ModeIconsRow
+ └── BottomNav
+      ├── Btn_Store
+      ├── Btn_Home
+      └── Btn_Socialusing UnityEngine;
+using UnityEngine.UI;
+
+public class LobbyUIController : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Text playerNameText;
+    public Text trophyText;
+    public Text starText;
+    public Image avatarImage;
+    public Image crownImage;
+
+    public void SetPlayerInfo(PlayerData data)
+    {
+        coinsText.text = data.coins.ToString();
+        gemsText.text = data.gems.ToString();
+        playerNameText.text = data.username;
+        trophyText.text = data.trophies.ToString();
+        starText.text = data.stars.ToString();
+        avatarImage.sprite = data.avatar;
+        crownImage.enabled = data.hasCrown;
+    }
+
+    public void OnFriendlyClicked()
+    {
+        Debug.Log("دوستانه انتخاب شد");
+        // Load friendly mode scene
+    }
+
+    public void OnRankedClicked()
+    {
+        Debug.Log("امتیازی انتخاب شد");
+        // Load ranked mode scene
+    }
+}
+Canvas
+ ├── TopTabs
+ │    ├── Btn_AllGroups
+ │    ├── Btn_GroupDetails
+ │    └── Btn_MyGroup
+ ├── GroupHeader
+ ├── GroupInfoPanel
+ ├── MemberList
+ │    ├── MemberCard (Prefab)
+ ├── ActionButtons
+ │    ├── Btn_EditGroup
+ │    ├── Btn_LeaveGroup
+ │    ├── Btn_AddMember
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum GroupRole { Leader, Deputy, Member }
+
+[System.Serializable]
+public class GroupMember
+{
+    public string username;
+    public int trophies;
+    public Sprite avatar;
+    public GroupRole role;
+}
+
+public class GroupManager : MonoBehaviour
+{
+    public Transform memberListParent;
+    public GameObject memberCardPrefab;
+
+    public void DisplayMembers(List<GroupMember> members)
+    {
+        foreach (Transform child in memberListParent)
+            Destroy(child.gameObject);
+
+        foreach (var member in members)
+        {
+            GameObject card = Instantiate(memberCardPrefab, memberListParent);
+            card.transform.Find("Username").GetComponent<Text>().text = member.username;
+            card.transform.Find("Trophy").GetComponent<Text>().text = member.trophies.ToString();
+            card.transform.Find("Avatar").GetComponent<Image>().sprite = member.avatar;
+            card.transform.Find("Role").GetComponent<Text>().text = member.role.ToString();
+        }
+    }
+}
+Canvas
+ ├── TopBar
+ │    ├── Title
+ │    ├── FilterButtons
+ │    └── SearchBar
+ ├── LobbyList
+ │    ├── LobbyCard (Prefab)
+ ├── BottomButtons
+ │    ├── Btn_CustomScenario
+ │    ├── Btn_CreateLobby
+ │    └── Btn_Refresh
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum LobbyMode { All, Private, Detective, Commando }
+
+[System.Serializable]
+public class LobbyInfo
+{
+    public string name;
+    public string creator;
+    public int players;
+    public int spectators;
+    public LobbyMode mode;
+}
+
+public class LobbyListManager : MonoBehaviour
+{
+    public Transform lobbyListParent;
+    public GameObject lobbyCardPrefab;
+
+    public void DisplayLobbies(List<LobbyInfo> lobbies)
+    {
+        foreach (Transform child in lobbyListParent)
+            Destroy(child.gameObject);
+
+        foreach (var lobby in lobbies)
+        {
+            GameObject card = Instantiate(lobbyCardPrefab, lobbyListParent);
+            card.transform.Find("LobbyName").GetComponent<Text>().text = lobby.name;
+            card.transform.Find("Creator").GetComponent<Text>().text = lobby.creator;
+            card.transform.Find("PlayerCount").GetComponent<Text>().text = $"{lobby.players} بازیکن / {lobby.spectators} تماشاگر";
+            card.transform.Find("Mode").GetComponent<Text>().text = lobby.mode.ToString();
+        }
+    }
+}
+Canvas
+ ├── TopBar
+ ├── TabButtons
+ ├── SelectedItemDisplay
+ ├── ItemTabs
+ ├── ItemGrid
+ │    ├── ItemCard (Prefab)
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum CosmeticType { Avatar, Frame, Crown }
+
+[System.Serializable]
+public class CosmeticItem
+{
+    public string name;
+    public Sprite image;
+    public int price;
+    public bool owned;
+    public bool equipped;
+    public CosmeticType type;
+}
+
+public class CosmeticShopManager : MonoBehaviour
+{
+    public Transform itemGridParent;
+    public GameObject itemCardPrefab;
+
+    public void DisplayItems(List<CosmeticItem> items)
+    {
+        foreach (Transform child in itemGridParent)
+            Destroy(child.gameObject);
+
+        foreach (var item in items)
+        {
+            GameObject card = Instantiate(itemCardPrefab, itemGridParent);
+            card.transform.Find("ItemImage").GetComponent<Image>().sprite = item.image;
+            card.transform.Find("Price").GetComponent<Text>().text = item.price.ToString();
+            card.transform.Find("Status").GetComponent<Text>().text = item.owned ? (item.equipped ? "استفاده شده" : "دارید") : "قابل خرید";
+        }
+    }
+}
+Canvas
+ ├── TopBar
+ │    ├── CoinsDisplay
+ │    └── GemsDisplay
+ ├── Section_CoinPackages
+ │    ├── CoinCard (Prefab)
+ ├── Section_GemPackages
+ │    ├── GemCard (Prefab)
+ ├── Section_GiftGems
+ │    ├── GiftGemCard (Prefab)
+ └── BottomNav
+      ├── Btn_Store
+      ├── Btn_Home
+      └── Btn_Social
+      using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class ShopItem
+{
+    public string name;
+    public Sprite icon;
+    public int amount;
+    public int price;
+    public string currency; // "gems" or "toman"
+    public bool isGift;
+}
+
+public class ShopManager : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Transform coinSection;
+    public Transform gemSection;
+    public Transform giftSection;
+    public GameObject itemCardPrefab;
+
+    public void SetPlayerBalance(int coins, int gems)
+    {
+        coinsText.text = coins.ToString();
+        gemsText.text = gems.ToString();
+    }
+
+    public void DisplayItems(List<ShopItem> items)
+    {
+        foreach (Transform child in coinSection) Destroy(child.gameObject);
+        foreach (Transform child in gemSection) Destroy(child.gameObject);
+        foreach (Transform child in giftSection) Destroy(child.gameObject);
+
+        foreach (var item in items)
+        {
+            Transform parent = item.isGift ? giftSection : (item.currency == "gems" ? coinSection : gemSection);
+            GameObject card = Instantiate(itemCardPrefab, parent);
+            card.transform.Find("ItemName").GetComponent<Text>().text = item.name;
+            card.transform.Find("ItemAmount").GetComponent<Text>().text = item.amount.ToString();
+            card.transform.Find("ItemPrice").GetComponent<Text>().text = item.price + (item.currency == "gems" ? " 💎" : " تومان");
+            card.transform.Find("ItemIcon").GetComponent<Image>().sprite = item.icon;
+        }
+    }
+
+    public void OnBuyItem(ShopItem item)
+    {
+        Debug.Log($"خرید آیتم: {item.name} با قیمت {item.price} {item.currency}");
+        // اتصال به سیستم پرداخت یا کاهش جم
+    }
+}
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class GemPackage
+{
+    public int gems;
+    public int priceToman;
+}
+
+[System.Serializable]
+public class EmojiPack
+{
+    public int emojis;
+    public int priceGems;
+}
+
+[System.Serializable]
+public class DailyReward
+{
+    public int day;
+    public int coins;
+    public bool claimed;
+}
+
+public class SpecialShopManager : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Transform gemSection;
+    public Transform emojiSection;
+    public Transform dailyRewardSection;
+    public GameObject gemCardPrefab;
+    public GameObject emojiCardPrefab;
+    public GameObject rewardCardPrefab;
+
+    public void SetBalance(int coins, int gems)
+    {
+        coinsText.text = coins.ToString();
+        gemsText.text = gems.ToString();
+    }
+
+    public void DisplayGemPackages(List<GemPackage> packages)
+    {
+        foreach (Transform child in gemSection) Destroy(child.gameObject);
+        foreach (var pack in packages)
+        {
+            GameObject card = Instantiate(gemCardPrefab, gemSection);
+            card.transform.Find("GemAmount").GetComponent<Text>().text = pack.gems.ToString();
+            card.transform.Find("Price").GetComponent<Text>().text = pack.priceToman + " تومان";
+        }
+    }
+
+    public void DisplayEmojiPacks(List<EmojiPack> packs)
+    {
+        foreach (Transform child in emojiSection) Destroy(child.gameObject);
+        foreach (var pack in packs)
+        {
+            GameObject card = Instantiate(emojiCardPrefab, emojiSection);
+            card.transform.Find("EmojiCount").GetComponent<Text>().text = pack.emojis.ToString();
+            card.transform.Find("Price").GetComponent<Text>().text = pack.priceGems + " 💎";
+        }
+    }
+
+    public void DisplayDailyRewards(List<DailyReward> rewards)
+    {
+        foreach (Transform child in dailyRewardSection) Destroy(child.gameObject);
+        foreach (var reward in rewards)
+        {
+            GameObject card = Instantiate(rewardCardPrefab, dailyRewardSection);
+            card.transform.Find("DayLabel").GetComponent<Text>().text = "روز " + reward.day;
+            card.transform.Find("CoinAmount").GetComponent<Text>().text = reward.coins.ToString();
+            card.transform.Find("Status").GetComponent<Text>().text = reward.claimed ? "✅" : "⏳";
+        }
+    }
+}
+Canvas
+ ├── Title ("ساخت سناریو")
+ ├── RoleCategories
+ │    ├── MafiaRoles
+ │    ├── CitizenRoles
+ │    └── IndependentRoles
+ ├── RoleCard (Prefab)
+ │    ├── RoleImage
+ │    ├── RoleName
+ │    ├── Btn_Add
+ │    ├── Btn_Remove
+ │    └── CountDisplay
+ ├── SummaryPanel
+ │    ├── MafiaCount
+ │    ├── CitizenCount
+ │    └── IndependentCount
+ ├── Btn_EditScenario
+ ├── Btn_Tournament
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum RoleType { Mafia, Citizen, Independent }
+
+[System.Serializable]
+public class Role
+{
+    public string name;
+    public Sprite icon;
+    public RoleType type;
+    public int count;
+}
+
+public class ScenarioBuilder : MonoBehaviour
+{
+    public List<Role> allRoles;
+    public Transform mafiaPanel;
+    public Transform citizenPanel;
+    public Transform independentPanel;
+    public GameObject roleCardPrefab;
+
+    public Text mafiaCountText;
+    public Text citizenCountText;
+    public Text independentCountText;
+
+    void Start()
+    {
+        DisplayRoles();
+        UpdateSummary();
+    }
+
+    void DisplayRoles()
+    {
+        foreach (var role in allRoles)
+        {
+            Transform parent = role.type switch
+            {
+                RoleType.Mafia => mafiaPanel,
+                RoleType.Citizen => citizenPanel,
+                RoleType.Independent => independentPanel,
+                _ => null
+            };
+
+            GameObject card = Instantiate(roleCardPrefab, parent);
+            card.transform.Find("RoleName").GetComponent<Text>().text = role.name;
+            card.transform.Find("RoleImage").GetComponent<Image>().sprite = role.icon;
+            card.transform.Find("CountDisplay").GetComponent<Text>().text = role.count.ToString();
+
+            Button addBtn = card.transform.Find("Btn_Add").GetComponent<Button>();
+            Button removeBtn = card.transform.Find("Btn_Remove").GetComponent<Button>();
+
+            addBtn.onClick.AddListener(() => { role.count++; UpdateCard(card, role); UpdateSummary(); });
+            removeBtn.onClick.AddListener(() => { if (role.count > 0) role.count--; UpdateCard(card, role); UpdateSummary(); });
+        }
+    }
+
+    void UpdateCard(GameObject card, Role role)
+    {
+        card.transform.Find("CountDisplay").GetComponent<Text>().text = role.count.ToString();
+    }
+
+    void UpdateSummary()
+    {
+        int mafia = 0, citizen = 0, independent = 0;
+        foreach (var role in allRoles)
+        {
+            switch (role.type)
+            {
+                case RoleType.Mafia: mafia += role.count; break;
+                case RoleType.Citizen: citizen += role.count; break;
+                case RoleType.Independent: independent += role.count; break;
+            }
+        }
+
+        mafiaCountText.text = "مافیا: " + mafia;
+        citizenCountText.text = "شهروند: " + citizen;
+        independentCountText.text = "مستقل: " + independent;
+    }
+}
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id;              // شناسه نقش (مثلاً "doctor")
+    public string displayName;     // نام فارسی نقش (مثلاً "دکتر")
+    public RoleTeam team;          // تیم نقش (مافیا / شهروند / مستقل)
+    public string description;     // توضیح نقش
+    public Sprite icon;            // تصویر نقش
+}
+new RoleDefinition {
+    id = "doctor",
+    displayName = "دکتر",
+    team = RoleTeam.Citizen,
+    description = "هر شب می‌تواند یک بازیکن را درمان کند و از مرگ نجات دهد.",
+    icon = doctorSprite
+}
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id;              // شناسه انگلیسی نقش (مثلاً "doctor")
+    public string displayName;     // نام فارسی نقش (مثلاً "دکتر")
+    public RoleTeam team;          // تیم نقش
+    public string description;     // توضیح کوتاه نقش
+    public Sprite icon;            // تصویر نقش
+}
+public List<RoleDefinition> allRoles = new List<RoleDefinition>
+{
+    new RoleDefinition { id = "godfather", displayName = "پدرخوانده", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "doctor", displayName = "دکتر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "killer", displayName = "قاتل", team = RoleTeam.Independent },
+    new RoleDefinition { id = "mayor", displayName = "شهردار", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "spy", displayName = "جاسوس", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "reviver", displayName = "احیاگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mason_leader", displayName = "رئیس ماسون", team = RoleTeam.Independent },
+    new RoleDefinition { id = "nun", displayName = "راهبه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "blacksmith", displayName = "آهنگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "cowboy", displayName = "کابوی", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "gangster", displayName = "گنگ‌استر", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "napoli", displayName = "ناپلی", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "psychologist", displayName = "روان‌شناس", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "tracker", displayName = "ردگیر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "observer", displayName = "نظاره‌گر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "immortal", displayName = "نامیرا", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "armored", displayName = "زره‌پوش", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "spider", displayName = "عنکبوت", team = RoleTeam.Independent },
+    new RoleDefinition { id = "simple_mafia", displayName = "مافیا ساده", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "citizen", displayName = "شهروند", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "strong_man", displayName = "مرد قوی", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "deceiver", displayName = "دغل", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "saboteur", displayName = "خرابکار", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "nun", displayName = "راهبه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mason", displayName = "ماسون", team = RoleTeam.Independent },
+    new RoleDefinition { id = "priest", displayName = "کشیش", team = RoleTeam.Independent },
+    new RoleDefinition { id = "gravedigger", displayName = "گورکن", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "negotiator", displayName = "مذاکره‌کننده", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "nato", displayName = "ناتو", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "simple_detective", displayName = "کارآگاه ساده", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "detective", displayName = "کارآگاه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "gunslinger", displayName = "تفنگدار", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "jailer", displayName = "زندانبان", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "guard", displayName = "نگهبان", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "nostradamus", displayName = "نوستراداموس", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "innocent", displayName = "بی‌گناه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "stranger", displayName = "بیگانه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "invulnerable", displayName = "رویین‌تن", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mafia_doctor", displayName = "دکتر مافیا", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "silencer", displayName = "سایلنسر", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "blackma", displayName = "بلک‌ما", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "exposer", displayName = "رسواگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mayor", displayName = "شهردار", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "reviver", displayName = "احیاگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "khan", displayName = "خان", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "terrorist", displayName = "تروریست", team = RoleTeam.Mafia },
+};
+using UnityEngine;
+
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id;              // شناسه انگلیسی
+    public string displayName;     // نام فارسی
+    public RoleTeam team;          // تیم نقش
+    [TextArea] public string description; // توضیح نقش
+    public Sprite icon;            // تصویر نقش
+}
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "RoleDatabase", menuName = "Game/RoleDatabase")]
+public class RoleDatabase : ScriptableObject
+{
+    public RoleData[] roles;
+}public class ScenarioBuilder : MonoBehaviour
+{
+    public RoleDatabase roleDatabase;
+    public Transform roleGridParent;
+    public GameObject roleCardPrefab;
+
+    void Start()
+    {
+        foreach (var role in roleDatabase.roles)
+        {
+            GameObject card = Instantiate(roleCardPrefab, roleGridParent);
+            card.transform.Find("RoleName").GetComponent<Text>().text = role.displayName;
+            card.transform.Find("RoleIcon").GetComponent<Image>().sprite = role.icon;
+            // دکمه‌های + و – و شمارش را هم اضافه کن
+        }
+    }
+}
+using UnityEngine;
+
+[System.Serializable]
+public class ScenarioDefinition
+{
+    public string id;                  // شناسه انگلیسی سناریو (مثلاً "detective")
+    public string displayName;         // نام فارسی سناریو (مثلاً "بازپرس")
+    public Sprite icon;                // آیکون سناریو
+    public RoleData[] allowedRoles;    // فقط این نقش‌ها در این سناریو فعال هستند
+}
+public class ScenarioBuilder : MonoBehaviour
+{
+    public ScenarioDefinition currentScenario;
+    public Transform roleGridParent;
+    public GameObject roleCardPrefab;
+
+    void Start()
+    {
+        DisplayScenarioRoles();
+    }
+
+    void DisplayScenarioRoles()
+    {
+        foreach (Transform child in roleGridParent)
+            Destroy(child.gameObject);
+
+        foreach (var role in currentScenario.allowedRoles)
+        {
+            GameObject card = Instantiate(roleCardPrefab, roleGridParent);
+            card.transform.Find("RoleName").GetComponent<Text>().text = role.displayName;
+            card.transform.Find("RoleIcon").GetComponent<Image>().sprite = role.icon;
+            // دکمه‌های + و – و شمارش را هم اضافه کن
+        }
+    }
+}
+public class PlayerInfo
+{
+    public string playerId;
+    public string playerName;
+    public Sprite avatar;
+    public RoleData assignedRole;
+}
+
+public class GameSetup
+{
+    public ScenarioDefinition scenario;
+    public List<RoleData> selectedRoles; // تکرار شده بر اساس تعداد
+    public List<PlayerInfo> players;
+}
+public List<PlayerInfo> AssignRolesToPlayers(GameSetup setup)
+{
+    List<RoleData> rolesToAssign = new List<RoleData>(setup.selectedRoles);
+    List<PlayerInfo> result = new List<PlayerInfo>();
+
+    // Shuffle roles
+    for (int i = 0; i < rolesToAssign.Count; i++)
+    {
+        int rand = Random.Range(i, rolesToAssign.Count);
+        (rolesToAssign[i], rolesToAssign[rand]) = (rolesToAssign[rand], rolesToAssign[i]);
+    }
+
+    for (int i = 0; i < setup.players.Count; i++)
+    {
+        setup.players[i].assignedRole = rolesToAssign[i];
+        result.Add(setup.players[i]);
+    }
+
+    return result;
+}
+public class GameManager : MonoBehaviour
+{
+    public GameSetup currentSetup;
+
+    public void StartGame()
+    {
+        var assignedPlayers = AssignRolesToPlayers(currentSetup);
+
+        foreach (var player in assignedPlayers)
+        {
+            Debug.Log($"بازیکن {player.playerName} نقش {player.assignedRole.displayName} گرفت");
+            // نمایش نقش به بازیکن
+        }
+
+        // Load NightScene یا GameScene
+        SceneManager.LoadScene("NightScene");
+    }
+}
+public class GameSetup
+{
+    public ScenarioDefinition scenario;      // سناریوی انتخاب‌شده
+    public List<RoleData> selectedRoles;     // نقش‌ها با تعداد نهایی
+    public List<PlayerInfo> players;         // بازیکن‌ها
+}
+public class RoleAssigner
+{
+    public static List<PlayerInfo> AssignRoles(GameSetup setup)
+    {
+        List<RoleData> roles = new List<RoleData>(setup.selectedRoles);
+
+        // Shuffle roles
+        for (int i = 0; i < roles.Count; i++)
+        {
+            int rand = Random.Range(i, roles.Count);
+            (roles[i], roles[rand]) = (roles[rand], roles[i]);
+        }
+
+        // Assign roles
+        for (int i = 0; i < setup.players.Count; i++)
+        {
+            setup.players[i].assignedRole = roles[i];
+        }
+
+        return setup.players;
+    }
+}
+public class GameManager : MonoBehaviour
+{
+    public GameSetup setup;
+
+    public void StartGame()
+    {
+        var playersWithRoles = RoleAssigner.AssignRoles(setup);
+
+        foreach (var p in playersWithRoles)
+        {
+            Debug.Log($"{p.playerName} نقش {p.assignedRole.displayName} گرفت");
+        }
+
+        // ورود به شب اول
+        UnityEngine.SceneManagement.SceneManager.LoadScene("NightScene");
+    }
+}
+public abstract class RoleAction : ScriptableObject
+{
+    public abstract void Execute(PlayerInfo actor, List<PlayerInfo> players);
+}
+[CreateAssetMenu(menuName = "Roles/DoctorAction")]
+public class DoctorAction : RoleAction
+{
+    public override void Execute(PlayerInfo actor, List<PlayerInfo> players)
+    {
+        Debug.Log("دکتر یک نفر را درمان کرد");
+    }
+}
+public class ScenarioDefinition : ScriptableObject
+{
+    public string id;
+    public string displayName;
+    public RoleData[] allowedRoles;
+    public RoleAction[] nightOrder;   // ترتیب نقش‌ها در شب
+}
+public class NightManager : MonoBehaviour
+{
+    public GameSetup setup;
+
+    public void RunNight()
+    {
+        foreach (var action in setup.scenario.nightOrder)
+        {
+            foreach (var player in setup.players)
+            {
+                if (player.assignedRole.nightAction == action)
+                {
+                    action.Execute(player, setup.players);
+                }
+            }
+        }
+    }
+}
+Canvas
+ ├── BG_City
+ ├── TopBar
+ │    ├── CoinsDisplay
+ │    └── GemsDisplay
+ ├── ProfileCard
+ │    ├── Avatar
+ │    ├── Crown
+ │    ├── Name
+ │    ├── Trophy
+ │    └── Star
+ ├── RightMenu
+ │    ├── Btn_Announcements
+ │    ├── Btn_Tutorial
+ │    ├── Btn_Ranking
+ │    ├── Btn_League
+ │    └── Btn_Live
+ ├── ModeButtons
+ │    ├── Btn_Friendly
+ │    └── Btn_Ranked
+ ├── ModeIconsRow
+ └── BottomNav
+      ├── Btn_Store
+      ├── Btn_Home
+      └── Btn_Socialusing UnityEngine;
+using UnityEngine.UI;
+
+public class LobbyUIController : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Text playerNameText;
+    public Text trophyText;
+    public Text starText;
+    public Image avatarImage;
+    public Image crownImage;
+
+    public void SetPlayerInfo(PlayerData data)
+    {
+        coinsText.text = data.coins.ToString();
+        gemsText.text = data.gems.ToString();
+        playerNameText.text = data.username;
+        trophyText.text = data.trophies.ToString();
+        starText.text = data.stars.ToString();
+        avatarImage.sprite = data.avatar;
+        crownImage.enabled = data.hasCrown;
+    }
+
+    public void OnFriendlyClicked()
+    {
+        Debug.Log("دوستانه انتخاب شد");
+        // Load friendly mode scene
+    }
+
+    public void OnRankedClicked()
+    {
+        Debug.Log("امتیازی انتخاب شد");
+        // Load ranked mode scene
+    }
+}
+Canvas
+ ├── TopTabs
+ │    ├── Btn_AllGroups
+ │    ├── Btn_GroupDetails
+ │    └── Btn_MyGroup
+ ├── GroupHeader
+ ├── GroupInfoPanel
+ ├── MemberList
+ │    ├── MemberCard (Prefab)
+ ├── ActionButtons
+ │    ├── Btn_EditGroup
+ │    ├── Btn_LeaveGroup
+ │    ├── Btn_AddMember
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum GroupRole { Leader, Deputy, Member }
+
+[System.Serializable]
+public class GroupMember
+{
+    public string username;
+    public int trophies;
+    public Sprite avatar;
+    public GroupRole role;
+}
+
+public class GroupManager : MonoBehaviour
+{
+    public Transform memberListParent;
+    public GameObject memberCardPrefab;
+
+    public void DisplayMembers(List<GroupMember> members)
+    {
+        foreach (Transform child in memberListParent)
+            Destroy(child.gameObject);
+
+        foreach (var member in members)
+        {
+            GameObject card = Instantiate(memberCardPrefab, memberListParent);
+            card.transform.Find("Username").GetComponent<Text>().text = member.username;
+            card.transform.Find("Trophy").GetComponent<Text>().text = member.trophies.ToString();
+            card.transform.Find("Avatar").GetComponent<Image>().sprite = member.avatar;
+            card.transform.Find("Role").GetComponent<Text>().text = member.role.ToString();
+        }
+    }
+}
+Canvas
+ ├── TopBar
+ │    ├── Title
+ │    ├── FilterButtons
+ │    └── SearchBar
+ ├── LobbyList
+ │    ├── LobbyCard (Prefab)
+ ├── BottomButtons
+ │    ├── Btn_CustomScenario
+ │    ├── Btn_CreateLobby
+ │    └── Btn_Refresh
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum LobbyMode { All, Private, Detective, Commando }
+
+[System.Serializable]
+public class LobbyInfo
+{
+    public string name;
+    public string creator;
+    public int players;
+    public int spectators;
+    public LobbyMode mode;
+}
+
+public class LobbyListManager : MonoBehaviour
+{
+    public Transform lobbyListParent;
+    public GameObject lobbyCardPrefab;
+
+    public void DisplayLobbies(List<LobbyInfo> lobbies)
+    {
+        foreach (Transform child in lobbyListParent)
+            Destroy(child.gameObject);
+
+        foreach (var lobby in lobbies)
+        {
+            GameObject card = Instantiate(lobbyCardPrefab, lobbyListParent);
+            card.transform.Find("LobbyName").GetComponent<Text>().text = lobby.name;
+            card.transform.Find("Creator").GetComponent<Text>().text = lobby.creator;
+            card.transform.Find("PlayerCount").GetComponent<Text>().text = $"{lobby.players} بازیکن / {lobby.spectators} تماشاگر";
+            card.transform.Find("Mode").GetComponent<Text>().text = lobby.mode.ToString();
+        }
+    }
+}
+Canvas
+ ├── TopBar
+ ├── TabButtons
+ ├── SelectedItemDisplay
+ ├── ItemTabs
+ ├── ItemGrid
+ │    ├── ItemCard (Prefab)
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum CosmeticType { Avatar, Frame, Crown }
+
+[System.Serializable]
+public class CosmeticItem
+{
+    public string name;
+    public Sprite image;
+    public int price;
+    public bool owned;
+    public bool equipped;
+    public CosmeticType type;
+}
+
+public class CosmeticShopManager : MonoBehaviour
+{
+    public Transform itemGridParent;
+    public GameObject itemCardPrefab;
+
+    public void DisplayItems(List<CosmeticItem> items)
+    {
+        foreach (Transform child in itemGridParent)
+            Destroy(child.gameObject);
+
+        foreach (var item in items)
+        {
+            GameObject card = Instantiate(itemCardPrefab, itemGridParent);
+            card.transform.Find("ItemImage").GetComponent<Image>().sprite = item.image;
+            card.transform.Find("Price").GetComponent<Text>().text = item.price.ToString();
+            card.transform.Find("Status").GetComponent<Text>().text = item.owned ? (item.equipped ? "استفاده شده" : "دارید") : "قابل خرید";
+        }
+    }
+}
+Canvas
+ ├── TopBar
+ │    ├── CoinsDisplay
+ │    └── GemsDisplay
+ ├── Section_CoinPackages
+ │    ├── CoinCard (Prefab)
+ ├── Section_GemPackages
+ │    ├── GemCard (Prefab)
+ ├── Section_GiftGems
+ │    ├── GiftGemCard (Prefab)
+ └── BottomNav
+      ├── Btn_Store
+      ├── Btn_Home
+      └── Btn_Social
+      using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class ShopItem
+{
+    public string name;
+    public Sprite icon;
+    public int amount;
+    public int price;
+    public string currency; // "gems" or "toman"
+    public bool isGift;
+}
+
+public class ShopManager : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Transform coinSection;
+    public Transform gemSection;
+    public Transform giftSection;
+    public GameObject itemCardPrefab;
+
+    public void SetPlayerBalance(int coins, int gems)
+    {
+        coinsText.text = coins.ToString();
+        gemsText.text = gems.ToString();
+    }
+
+    public void DisplayItems(List<ShopItem> items)
+    {
+        foreach (Transform child in coinSection) Destroy(child.gameObject);
+        foreach (Transform child in gemSection) Destroy(child.gameObject);
+        foreach (Transform child in giftSection) Destroy(child.gameObject);
+
+        foreach (var item in items)
+        {
+            Transform parent = item.isGift ? giftSection : (item.currency == "gems" ? coinSection : gemSection);
+            GameObject card = Instantiate(itemCardPrefab, parent);
+            card.transform.Find("ItemName").GetComponent<Text>().text = item.name;
+            card.transform.Find("ItemAmount").GetComponent<Text>().text = item.amount.ToString();
+            card.transform.Find("ItemPrice").GetComponent<Text>().text = item.price + (item.currency == "gems" ? " 💎" : " تومان");
+            card.transform.Find("ItemIcon").GetComponent<Image>().sprite = item.icon;
+        }
+    }
+
+    public void OnBuyItem(ShopItem item)
+    {
+        Debug.Log($"خرید آیتم: {item.name} با قیمت {item.price} {item.currency}");
+        // اتصال به سیستم پرداخت یا کاهش جم
+    }
+}
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class GemPackage
+{
+    public int gems;
+    public int priceToman;
+}
+
+[System.Serializable]
+public class EmojiPack
+{
+    public int emojis;
+    public int priceGems;
+}
+
+[System.Serializable]
+public class DailyReward
+{
+    public int day;
+    public int coins;
+    public bool claimed;
+}
+
+public class SpecialShopManager : MonoBehaviour
+{
+    public Text coinsText;
+    public Text gemsText;
+    public Transform gemSection;
+    public Transform emojiSection;
+    public Transform dailyRewardSection;
+    public GameObject gemCardPrefab;
+    public GameObject emojiCardPrefab;
+    public GameObject rewardCardPrefab;
+
+    public void SetBalance(int coins, int gems)
+    {
+        coinsText.text = coins.ToString();
+        gemsText.text = gems.ToString();
+    }
+
+    public void DisplayGemPackages(List<GemPackage> packages)
+    {
+        foreach (Transform child in gemSection) Destroy(child.gameObject);
+        foreach (var pack in packages)
+        {
+            GameObject card = Instantiate(gemCardPrefab, gemSection);
+            card.transform.Find("GemAmount").GetComponent<Text>().text = pack.gems.ToString();
+            card.transform.Find("Price").GetComponent<Text>().text = pack.priceToman + " تومان";
+        }
+    }
+
+    public void DisplayEmojiPacks(List<EmojiPack> packs)
+    {
+        foreach (Transform child in emojiSection) Destroy(child.gameObject);
+        foreach (var pack in packs)
+        {
+            GameObject card = Instantiate(emojiCardPrefab, emojiSection);
+            card.transform.Find("EmojiCount").GetComponent<Text>().text = pack.emojis.ToString();
+            card.transform.Find("Price").GetComponent<Text>().text = pack.priceGems + " 💎";
+        }
+    }
+
+    public void DisplayDailyRewards(List<DailyReward> rewards)
+    {
+        foreach (Transform child in dailyRewardSection) Destroy(child.gameObject);
+        foreach (var reward in rewards)
+        {
+            GameObject card = Instantiate(rewardCardPrefab, dailyRewardSection);
+            card.transform.Find("DayLabel").GetComponent<Text>().text = "روز " + reward.day;
+            card.transform.Find("CoinAmount").GetComponent<Text>().text = reward.coins.ToString();
+            card.transform.Find("Status").GetComponent<Text>().text = reward.claimed ? "✅" : "⏳";
+        }
+    }
+}
+Canvas
+ ├── Title ("ساخت سناریو")
+ ├── RoleCategories
+ │    ├── MafiaRoles
+ │    ├── CitizenRoles
+ │    └── IndependentRoles
+ ├── RoleCard (Prefab)
+ │    ├── RoleImage
+ │    ├── RoleName
+ │    ├── Btn_Add
+ │    ├── Btn_Remove
+ │    └── CountDisplay
+ ├── SummaryPanel
+ │    ├── MafiaCount
+ │    ├── CitizenCount
+ │    └── IndependentCount
+ ├── Btn_EditScenario
+ ├── Btn_Tournament
+ └── BottomNav
+ using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+
+public enum RoleType { Mafia, Citizen, Independent }
+
+[System.Serializable]
+public class Role
+{
+    public string name;
+    public Sprite icon;
+    public RoleType type;
+    public int count;
+}
+
+public class ScenarioBuilder : MonoBehaviour
+{
+    public List<Role> allRoles;
+    public Transform mafiaPanel;
+    public Transform citizenPanel;
+    public Transform independentPanel;
+    public GameObject roleCardPrefab;
+
+    public Text mafiaCountText;
+    public Text citizenCountText;
+    public Text independentCountText;
+
+    void Start()
+    {
+        DisplayRoles();
+        UpdateSummary();
+    }
+
+    void DisplayRoles()
+    {
+        foreach (var role in allRoles)
+        {
+            Transform parent = role.type switch
+            {
+                RoleType.Mafia => mafiaPanel,
+                RoleType.Citizen => citizenPanel,
+                RoleType.Independent => independentPanel,
+                _ => null
+            };
+
+            GameObject card = Instantiate(roleCardPrefab, parent);
+            card.transform.Find("RoleName").GetComponent<Text>().text = role.name;
+            card.transform.Find("RoleImage").GetComponent<Image>().sprite = role.icon;
+            card.transform.Find("CountDisplay").GetComponent<Text>().text = role.count.ToString();
+
+            Button addBtn = card.transform.Find("Btn_Add").GetComponent<Button>();
+            Button removeBtn = card.transform.Find("Btn_Remove").GetComponent<Button>();
+
+            addBtn.onClick.AddListener(() => { role.count++; UpdateCard(card, role); UpdateSummary(); });
+            removeBtn.onClick.AddListener(() => { if (role.count > 0) role.count--; UpdateCard(card, role); UpdateSummary(); });
+        }
+    }
+
+    void UpdateCard(GameObject card, Role role)
+    {
+        card.transform.Find("CountDisplay").GetComponent<Text>().text = role.count.ToString();
+    }
+
+    void UpdateSummary()
+    {
+        int mafia = 0, citizen = 0, independent = 0;
+        foreach (var role in allRoles)
+        {
+            switch (role.type)
+            {
+                case RoleType.Mafia: mafia += role.count; break;
+                case RoleType.Citizen: citizen += role.count; break;
+                case RoleType.Independent: independent += role.count; break;
+            }
+        }
+
+        mafiaCountText.text = "مافیا: " + mafia;
+        citizenCountText.text = "شهروند: " + citizen;
+        independentCountText.text = "مستقل: " + independent;
+    }
+}
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id;              // شناسه نقش (مثلاً "doctor")
+    public string displayName;     // نام فارسی نقش (مثلاً "دکتر")
+    public RoleTeam team;          // تیم نقش (مافیا / شهروند / مستقل)
+    public string description;     // توضیح نقش
+    public Sprite icon;            // تصویر نقش
+}
+new RoleDefinition {
+    id = "doctor",
+    displayName = "دکتر",
+    team = RoleTeam.Citizen,
+    description = "هر شب می‌تواند یک بازیکن را درمان کند و از مرگ نجات دهد.",
+    icon = doctorSprite
+}
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id;              // شناسه انگلیسی نقش (مثلاً "doctor")
+    public string displayName;     // نام فارسی نقش (مثلاً "دکتر")
+    public RoleTeam team;          // تیم نقش
+    public string description;     // توضیح کوتاه نقش
+    public Sprite icon;            // تصویر نقش
+}
+public List<RoleDefinition> allRoles = new List<RoleDefinition>
+{
+    new RoleDefinition { id = "godfather", displayName = "پدرخوانده", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "doctor", displayName = "دکتر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "killer", displayName = "قاتل", team = RoleTeam.Independent },
+    new RoleDefinition { id = "mayor", displayName = "شهردار", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "spy", displayName = "جاسوس", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "reviver", displayName = "احیاگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mason_leader", displayName = "رئیس ماسون", team = RoleTeam.Independent },
+    new RoleDefinition { id = "nun", displayName = "راهبه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "blacksmith", displayName = "آهنگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "cowboy", displayName = "کابوی", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "gangster", displayName = "گنگ‌استر", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "napoli", displayName = "ناپلی", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "psychologist", displayName = "روان‌شناس", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "tracker", displayName = "ردگیر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "observer", displayName = "نظاره‌گر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "immortal", displayName = "نامیرا", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "armored", displayName = "زره‌پوش", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "spider", displayName = "عنکبوت", team = RoleTeam.Independent },
+    new RoleDefinition { id = "simple_mafia", displayName = "مافیا ساده", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "citizen", displayName = "شهروند", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "strong_man", displayName = "مرد قوی", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "deceiver", displayName = "دغل", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "saboteur", displayName = "خرابکار", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "nun", displayName = "راهبه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mason", displayName = "ماسون", team = RoleTeam.Independent },
+    new RoleDefinition { id = "priest", displayName = "کشیش", team = RoleTeam.Independent },
+    new RoleDefinition { id = "gravedigger", displayName = "گورکن", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "negotiator", displayName = "مذاکره‌کننده", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "nato", displayName = "ناتو", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "simple_detective", displayName = "کارآگاه ساده", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "detective", displayName = "کارآگاه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "gunslinger", displayName = "تفنگدار", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "jailer", displayName = "زندانبان", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "guard", displayName = "نگهبان", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "nostradamus", displayName = "نوستراداموس", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "innocent", displayName = "بی‌گناه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "stranger", displayName = "بیگانه", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "invulnerable", displayName = "رویین‌تن", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mafia_doctor", displayName = "دکتر مافیا", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "silencer", displayName = "سایلنسر", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "blackma", displayName = "بلک‌ما", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "exposer", displayName = "رسواگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "mayor", displayName = "شهردار", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "reviver", displayName = "احیاگر", team = RoleTeam.Citizen },
+    new RoleDefinition { id = "khan", displayName = "خان", team = RoleTeam.Mafia },
+    new RoleDefinition { id = "terrorist", displayName = "تروریست", team = RoleTeam.Mafia },
+};
+using UnityEngine;
+
+public enum RoleTeam
+{
+    Mafia,
+    Citizen,
+    Independent
+}
+
+[System.Serializable]
+public class RoleDefinition
+{
+    public string id;              // شناسه انگلیسی
+    public string displayName;     // نام فارسی
+    public RoleTeam team;          // تیم نقش
+    [TextArea] public string description; // توضیح نقش
+    public Sprite icon;            // تصویر نقش
+}
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "RoleDatabase", menuName = "Game/RoleDatabase")]
+public class RoleDatabase : ScriptableObject
+{
+    public RoleData[] roles;
+}public class ScenarioBuilder : MonoBehaviour
+{
+    public RoleDatabase roleDatabase;
+    public Transform roleGridParent;
+    public GameObject roleCardPrefab;
+
+    void Start()
+    {
+        foreach (var role in roleDatabase.roles)
+        {
+            GameObject card = Instantiate(roleCardPrefab, roleGridParent);
+            card.transform.Find("RoleName").GetComponent<Text>().text = role.displayName;
+            card.transform.Find("RoleIcon").GetComponent<Image>().sprite = role.icon;
+            // دکمه‌های + و – و شمارش را هم اضافه کن
+        }
+    }
+}
+using UnityEngine;
+
+[System.Serializable]
+public class ScenarioDefinition
+{
+    public string id;                  // شناسه انگلیسی سناریو (مثلاً "detective")
+    public string displayName;         // نام فارسی سناریو (مثلاً "بازپرس")
+    public Sprite icon;                // آیکون سناریو
+    public RoleData[] allowedRoles;    // فقط این نقش‌ها در این سناریو فعال هستند
+}
+public class ScenarioBuilder : MonoBehaviour
+{
+    public ScenarioDefinition currentScenario;
+    public Transform roleGridParent;
+    public GameObject roleCardPrefab;
+
+    void Start()
+    {
+        DisplayScenarioRoles();
+    }
+
+    void DisplayScenarioRoles()
+    {
+        foreach (Transform child in roleGridParent)
+            Destroy(child.gameObject);
+
+        foreach (var role in currentScenario.allowedRoles)
+        {
+            GameObject card = Instantiate(roleCardPrefab, roleGridParent);
+            card.transform.Find("RoleName").GetComponent<Text>().text = role.displayName;
+            card.transform.Find("RoleIcon").GetComponent<Image>().sprite = role.icon;
+            // دکمه‌های + و – و شمارش را هم اضافه کن
+        }
+    }
+}
+public class PlayerInfo
+{
+    public string playerId;
+    public string playerName;
+    public Sprite avatar;
+    public RoleData assignedRole;
+}
+
+public class GameSetup
+{
+    public ScenarioDefinition scenario;
+    public List<RoleData> selectedRoles; // تکرار شده بر اساس تعداد
+    public List<PlayerInfo> players;
+}
+public List<PlayerInfo> AssignRolesToPlayers(GameSetup setup)
+{
+    List<RoleData> rolesToAssign = new List<RoleData>(setup.selectedRoles);
+    List<PlayerInfo> result = new List<PlayerInfo>();
+
+    // Shuffle roles
+    for (int i = 0; i < rolesToAssign.Count; i++)
+    {
+        int rand = Random.Range(i, rolesToAssign.Count);
+        (rolesToAssign[i], rolesToAssign[rand]) = (rolesToAssign[rand], rolesToAssign[i]);
+    }
+
+    for (int i = 0; i < setup.players.Count; i++)
+    {
+        setup.players[i].assignedRole = rolesToAssign[i];
+        result.Add(setup.players[i]);
+    }
+
+    return result;
+}
+public class GameManager : MonoBehaviour
+{
+    public GameSetup currentSetup;
+
+    public void StartGame()
+    {
+        var assignedPlayers = AssignRolesToPlayers(currentSetup);
+
+        foreach (var player in assignedPlayers)
+        {
+            Debug.Log($"بازیکن {player.playerName} نقش {player.assignedRole.displayName} گرفت");
+            // نمایش نقش به بازیکن
+        }
+
+        // Load NightScene یا GameScene
+        SceneManager.LoadScene("NightScene");
+    }
+}
+public class GameSetup
+{
+    public ScenarioDefinition scenario;      // سناریوی انتخاب‌شده
+    public List<RoleData> selectedRoles;     // نقش‌ها با تعداد نهایی
+    public List<PlayerInfo> players;         // بازیکن‌ها
+}
+public class RoleAssigner
+{
+    public static List<PlayerInfo> AssignRoles(GameSetup setup)
+    {
+        List<RoleData> roles = new List<RoleData>(setup.selectedRoles);
+
+        // Shuffle roles
+        for (int i = 0; i < roles.Count; i++)
+        {
+            int rand = Random.Range(i, roles.Count);
+            (roles[i], roles[rand]) = (roles[rand], roles[i]);
+        }
+
+        // Assign roles
+        for (int i = 0; i < setup.players.Count; i++)
+        {
+            setup.players[i].assignedRole = roles[i];
+        }
+
+        return setup.players;
+    }
+}
+public class GameManager : MonoBehaviour
+{
+    public GameSetup setup;
+
+    public void StartGame()
+    {
+        var playersWithRoles = RoleAssigner.AssignRoles(setup);
+
+        foreach (var p in playersWithRoles)
+        {
+            Debug.Log($"{p.playerName} نقش {p.assignedRole.displayName} گرفت");
+        }
+
+        // ورود به شب اول
+        UnityEngine.SceneManagement.SceneManager.LoadScene("NightScene");
+    }
+}
+public abstract class RoleAction : ScriptableObject
+{
+    public abstract void Execute(PlayerInfo actor, List<PlayerInfo> players);
+}
+[CreateAssetMenu(menuName = "Roles/DoctorAction")]
+public class DoctorAction : RoleAction
+{
+    public override void Execute(PlayerInfo actor, List<PlayerInfo> players)
+    {
+        Debug.Log("دکتر یک نفر را درمان کرد");
+    }
+}
+public class ScenarioDefinition : ScriptableObject
+{
+    public string id;
+    public string displayName;
+    public RoleData[] allowedRoles;
+    public RoleAction[] nightOrder;   // ترتیب نقش‌ها در شب
+}
+public class NightManager : MonoBehaviour
+{
+    public GameSetup setup;
+
+    public void RunNight()
+    {
+        foreach (var action in setup.scenario.nightOrder)
+        {
+            foreach (var player in setup.players)
+            {
+                if (player.assignedRole.nightAction == action)
+                {
+                    action.Execute(player, setup.players);
+                }
+            }
+        }
+    }
+}
